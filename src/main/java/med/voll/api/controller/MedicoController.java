@@ -2,17 +2,14 @@ package med.voll.api.controller;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import med.voll.api.medico.DadosMedico;
-import med.voll.api.medico.Medico;
-import med.voll.api.medico.MedicoDTO;
-import med.voll.api.medico.MedicoRepository;
+import med.voll.api.domain.medico.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/medicos")
@@ -23,25 +20,45 @@ public class MedicoController {
 
     @PostMapping
     @Transactional
-    public void cadastrar(@RequestBody @Valid DadosMedico dadosMedico) {
-        medicoRepository.save(new Medico(dadosMedico));
+    public ResponseEntity cadastrar(@RequestBody @Valid DadosMedico dadosMedico, UriComponentsBuilder uriBuilder) {
+        var medico = new Medico(dadosMedico);
+        medicoRepository.save(medico);
+        var uri = uriBuilder.path("/medicos/{id}")
+                .buildAndExpand(medico.getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(medico);
     }
 
     @GetMapping
-    public Page<MedicoDTO> listar(Pageable paginacao) {
-        return medicoRepository.findAll(paginacao)
+    public ResponseEntity<Page<MedicoDTO>> listar(Pageable paginacao) {
+        var page = medicoRepository.findAllByAtivoTrue(paginacao)
                 .map(MedicoDTO::new);
+        return ResponseEntity.ok(page);
+
     }
 
+
+    @PutMapping
+    @Transactional
+    public ResponseEntity atualiazar(@RequestBody @Valid AtualizaMedicoDTO dadosMedico) {
+        var medico = medicoRepository.getReferenceById(dadosMedico.id());
+        medico.atualizarInformacoes(dadosMedico);
+        return ResponseEntity.ok(new MedicoDTO(medico));
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity excluir(@PathVariable Long id) {
+        var medicoOpt = medicoRepository.findById(id);
+        medicoOpt.get().excluir();
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping("/{id}")
-    public MedicoDTO detalhar(@PathVariable Long id) {
-        Optional<Medico> medico = medicoRepository.findById(id);
-        if (medico.isPresent()) {
-            return new MedicoDTO(medico.get());
-        } else {
-            throw new RuntimeException("Médico não encontrado");
-        }
+    public ResponseEntity detalhes(@PathVariable Long id) {
+        var medicoOpt = medicoRepository.findById(id);
+        return ResponseEntity.ok(medicoOpt);
     }
+
 
 }
