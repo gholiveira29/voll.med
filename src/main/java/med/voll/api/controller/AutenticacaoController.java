@@ -4,6 +4,7 @@ package med.voll.api.controller;
 import jakarta.validation.Valid;
 import med.voll.api.domain.usuario.DadosAutenticacao;
 import med.voll.api.domain.usuario.Usuario;
+import med.voll.api.infra.security.TokenDadosDTO;
 import med.voll.api.infra.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class AutenticacaoController {
     public ResponseEntity efetuarlogin(@RequestBody @Valid DadosAutenticacao dadosAutenticacao) {
         var token = new UsernamePasswordAuthenticationToken(dadosAutenticacao.login(), dadosAutenticacao.senha());
         var authentication = authenticationManager.authenticate(token);
-
-        return ResponseEntity.ok(tokenService.gerarToken((Usuario) authentication.getPrincipal()));
+        var tokenResponse = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+        return ResponseEntity.ok(new TokenDadosDTO(tokenResponse));
     }
 }
