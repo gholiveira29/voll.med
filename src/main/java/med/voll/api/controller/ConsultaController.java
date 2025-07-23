@@ -1,5 +1,7 @@
 package med.voll.api.controller;
 
+import med.voll.api.domain.consulta.DadosAgendamentoConsulta;
+import med.voll.api.domain.consulta.DadosDetalhamentoConsulta;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,9 +18,9 @@ public class ConsultaController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity agendar(@RequestBody @Valid DadosAgendamentoConsulta dados) {
+    public ResponseEntity<DadosDetalhamentoConsulta> agendar(@RequestBody @Valid DadosAgendamentoConsulta dados) {
         System.out.println(dados);
-        return ResponseEntity.ok(new DadosAgendamentoConsulta(null, null, null, null));
+        return ResponseEntity.ok(new DadosDetalhamentoConsulta(null, null, null, null));
     }
 
 }
