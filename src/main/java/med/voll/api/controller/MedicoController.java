@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 @RestController
 @RequestMapping("/medicos")
 public class MedicoController {
@@ -20,7 +19,8 @@ public class MedicoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosMedico dadosMedico, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<Medico> cadastrar(@RequestBody @Valid DadosMedico dadosMedico,
+            UriComponentsBuilder uriBuilder) {
         var medico = new Medico(dadosMedico);
         medicoRepository.save(medico);
         var uri = uriBuilder.path("/medicos/{id}")
@@ -37,10 +37,9 @@ public class MedicoController {
 
     }
 
-
     @PutMapping
     @Transactional
-    public ResponseEntity atualiazar(@RequestBody @Valid AtualizaMedicoDTO dadosMedico) {
+    public ResponseEntity<MedicoDTO> atualiazar(@RequestBody @Valid AtualizaMedicoDTO dadosMedico) {
         var medico = medicoRepository.getReferenceById(dadosMedico.id());
         medico.atualizarInformacoes(dadosMedico);
         return ResponseEntity.ok(new MedicoDTO(medico));
@@ -48,7 +47,7 @@ public class MedicoController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity excluir(@PathVariable Long id) {
+    public ResponseEntity<String> excluir(@PathVariable Long id) {
         var medicoOpt = medicoRepository.findById(id);
         medicoOpt.get().excluir();
         return ResponseEntity.noContent().build();
@@ -59,6 +58,5 @@ public class MedicoController {
         var medicoOpt = medicoRepository.findById(id);
         return ResponseEntity.ok(medicoOpt);
     }
-
 
 }

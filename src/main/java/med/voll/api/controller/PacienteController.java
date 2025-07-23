@@ -1,6 +1,5 @@
 package med.voll.api.controller;
 
-
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import med.voll.api.domain.paciente.*;
@@ -20,7 +19,8 @@ public class PacienteController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosPaciente dadosPaciente, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<PacienteDTO> cadastrar(@RequestBody @Valid DadosPaciente dadosPaciente,
+            UriComponentsBuilder uriBuilder) {
         var paciente = new Paciente(dadosPaciente);
         pacienteRepository.save(paciente);
         var uri = uriBuilder.path("/pacientes/{id}")
@@ -28,7 +28,6 @@ public class PacienteController {
                 .toUri();
         return ResponseEntity.created(uri).body(new PacienteDTO(paciente));
     }
-
 
     @GetMapping
     public ResponseEntity<Page<PacienteDTO>> listar(Pageable paginacao) {
@@ -39,12 +38,11 @@ public class PacienteController {
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualiazar(@RequestBody @Valid AtualizaDadosPacienteDTO dadosPaciente) {
+    public ResponseEntity<PacienteDTO> atualiazar(@RequestBody @Valid AtualizaDadosPacienteDTO dadosPaciente) {
         var paciente = pacienteRepository.getReferenceById(dadosPaciente.id());
         paciente.atualizarInformacoes(dadosPaciente);
         return ResponseEntity.ok(new PacienteDTO(paciente));
     }
-
 
     @DeleteMapping("/{id}")
     @Transactional

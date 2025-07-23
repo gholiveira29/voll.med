@@ -1,6 +1,5 @@
 package med.voll.api.infra.security;
 
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
 
 @Service
 public class TokenService {
@@ -28,7 +26,7 @@ public class TokenService {
                     .withSubject(usuario.getUsername())
                     .withExpiresAt(dataExpiracao())
                     .sign(algoritimo);
-        } catch (JWTCreationException exception){
+        } catch (JWTCreationException exception) {
             throw new RuntimeException("Erro ao gerar token jwt", exception);
         }
     }
@@ -41,7 +39,7 @@ public class TokenService {
                     .build()
                     .verify(tokenJWT)
                     .getSubject();
-        }catch (JWTVerificationException exception) {
+        } catch (JWTVerificationException exception) {
             throw new RuntimeException("Token invalido ou expirado", exception);
         }
     }
