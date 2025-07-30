@@ -1,4 +1,5 @@
 package med.voll.api.controller;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import med.voll.api.domain.usuario.Usuario;
 import med.voll.api.domain.usuario.UsuarioDTO;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuario")
+@SecurityRequirement(name = "bearer-key")
 public class UsuarioController {
 
     @Autowired
